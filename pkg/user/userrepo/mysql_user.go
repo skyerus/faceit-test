@@ -101,6 +101,28 @@ func (ur mysqlUserRepository) GetAll(f user.Filter) ([]user.User, customerror.Er
 	return users, nil
 }
 
+func (ur mysqlUserRepository) Update(u user.User) customerror.Error {
+	stmtIns, err := ur.Conn.Prepare("UPDATE user SET first_name=?, last_name=?, nickname=?, email=?, country=? WHERE id=?")
+	if err != nil {
+		return customerror.NewGenericHTTPError(err)
+	}
+	defer stmtIns.Close()
+
+	result, err := stmtIns.Exec(u.FirstName, u.LastName, u.Nickname, u.Email, u.Country, u.ID)
+	if err != nil {
+		return customerror.NewGenericHTTPError(err)
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return customerror.NewGenericHTTPError(err)
+	}
+	if rowsAffected != 1 {
+		return customerror.NewNotFoundError("No user exists with id " + strconv.Itoa(u.ID))
+	}
+
+	return nil
+}
+
 func appendFilterToQuery(qb *strings.Builder, f user.Filter) {
 	var filterBeenApplied bool
 	for k, v := range f {

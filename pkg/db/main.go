@@ -7,7 +7,7 @@ import (
 
 // OpenDb - create db connection
 func OpenDb() (*sql.DB, error) {
-	db, err := sql.Open("mysql", os.Getenv("DB_URL")+"?parseTime=true")
+	db, err := sql.Open("mysql", os.Getenv("DB_URL")+"?parseTime=true&clientFoundRows=true")
 	if err != nil {
 		return db, err
 	}

@@ -3,9 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
-	"github.com/gorilla/mux"
 	"github.com/skyerus/faceit-test/pkg/user"
 	"github.com/skyerus/faceit-test/pkg/user/userrepo"
 	"github.com/skyerus/faceit-test/pkg/user/userservice"
@@ -30,19 +28,14 @@ func (router *router) createUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (router *router) getUser(w http.ResponseWriter, r *http.Request) {
-	idStr, success := mux.Vars(r)["id"]
-	if !success {
-		respondBadRequest(w)
-		return
-	}
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		respondBadRequest(w)
+	ID, customErr := getID(r)
+	if customErr != nil {
+		handleError(w, customErr)
 		return
 	}
 	userRepo := userrepo.NewMysqlUserRepository(router.conn)
 	userService := userservice.NewUserService(userRepo)
-	u, customErr := userService.Get(id)
+	u, customErr := userService.Get(ID)
 	if customErr != nil {
 		handleError(w, customErr)
 		return
@@ -52,19 +45,14 @@ func (router *router) getUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (router *router) deleteUser(w http.ResponseWriter, r *http.Request) {
-	idStr, success := mux.Vars(r)["id"]
-	if !success {
-		respondBadRequest(w)
-		return
-	}
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		respondBadRequest(w)
+	ID, customErr := getID(r)
+	if customErr != nil {
+		handleError(w, customErr)
 		return
 	}
 	userRepo := userrepo.NewMysqlUserRepository(router.conn)
 	userService := userservice.NewUserService(userRepo)
-	customErr := userService.Delete(id)
+	customErr = userService.Delete(ID)
 	if customErr != nil {
 		handleError(w, customErr)
 		return
@@ -89,4 +77,29 @@ func (router *router) getUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondJSON(w, http.StatusOK, users)
+}
+
+func (router *router) updateUser(w http.ResponseWriter, r *http.Request) {
+	ID, customErr := getID(r)
+	if customErr != nil {
+		handleError(w, customErr)
+		return
+	}
+	var u user.User
+	err := json.NewDecoder(r.Body).Decode(&u)
+	if err != nil {
+		respondBadRequest(w)
+		return
+	}
+	u.ID = ID
+
+	userRepo := userrepo.NewMysqlUserRepository(router.conn)
+	userService := userservice.NewUserService(userRepo)
+	customErr = userService.Update(u)
+	if customErr != nil {
+		handleError(w, customErr)
+		return
+	}
+
+	respondJSON(w, http.StatusOK, u)
 }

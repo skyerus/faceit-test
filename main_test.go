@@ -144,6 +144,25 @@ func TestGetUsers(t *testing.T) {
 	}
 }
 
+func TestUpdateUser(t *testing.T) {
+	db.ClearUserTable(conn)
+	createUser(testUser)
+	updatedUser := testUser
+	updatedUser.Nickname = "johnnyapple"
+	byteData, _ := json.Marshal(updatedUser)
+	req, _ := http.NewRequest("PUT", "/users/1", bytes.NewBuffer(byteData))
+	response := executeRequest(req)
+	assertResponseCode(t, http.StatusOK, response.Code)
+	req, _ = http.NewRequest("GET", "/users/1", nil)
+	response = executeRequest(req)
+	var u user.User
+	err := json.Unmarshal(response.Body.Bytes(), &u)
+	if err != nil {
+		t.Fatalf("Unmarshal error")
+	}
+	assertUsers(t, updatedUser, u)
+}
+
 func getUsers(t *testing.T, filter user.Filter) []user.User {
 	req, _ := http.NewRequest("GET", "/users", nil)
 	q := req.URL.Query()
