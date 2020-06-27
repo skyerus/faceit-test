@@ -2,6 +2,7 @@ package userservice
 
 import (
 	"github.com/skyerus/faceit-test/pkg/customerror"
+	"github.com/skyerus/faceit-test/pkg/event"
 	"github.com/skyerus/faceit-test/pkg/user"
 )
 
@@ -15,7 +16,12 @@ func NewUserService(userRepo user.Repository) user.Service {
 }
 
 func (us userService) Create(u *user.User) customerror.Error {
-	return us.userRepo.Create(u)
+	customErr := us.userRepo.Create(u)
+	if customErr != nil {
+		return customErr
+	}
+	go event.BroadcastCreateEvent(*u)
+	return nil
 }
 
 func (us userService) Get(ID int) (user.User, customerror.Error) {
@@ -23,7 +29,12 @@ func (us userService) Get(ID int) (user.User, customerror.Error) {
 }
 
 func (us userService) Delete(ID int) customerror.Error {
-	return us.userRepo.Delete(ID)
+	customErr := us.userRepo.Delete(ID)
+	if customErr != nil {
+		return customErr
+	}
+	go event.BroadcastDeleteEvent(ID)
+	return nil
 }
 
 func (us userService) GetAll(f user.Filter) ([]user.User, customerror.Error) {
@@ -31,5 +42,10 @@ func (us userService) GetAll(f user.Filter) ([]user.User, customerror.Error) {
 }
 
 func (us userService) Update(u user.User) customerror.Error {
-	return us.userRepo.Update(u)
+	customErr := us.userRepo.Update(u)
+	if customErr != nil {
+		return customErr
+	}
+	go event.BroadcastUpdateEvent(u)
+	return nil
 }

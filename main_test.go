@@ -30,6 +30,7 @@ var testUser user.User = user.User{
 func TestMain(m *testing.M) {
 	var err error
 	env.SetEnv()
+	os.Setenv("NO_EVENT_BROADCASTS", "true")
 	a = api.App{}
 	conn, err = db.OpenDb()
 	if err != nil {
