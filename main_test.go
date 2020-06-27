@@ -70,7 +70,7 @@ func TestCreateUser(t *testing.T) {
 	var u user.User
 	err := json.Unmarshal(response.Body.Bytes(), &u)
 	if err != nil {
-		t.Errorf("Unmarshal error")
+		t.Fatalf("Unmarshal error")
 	}
 	assertUsers(t, testUser, u)
 }
@@ -80,12 +80,28 @@ func TestGetUser(t *testing.T) {
 	createTestUser()
 	req, _ := http.NewRequest("GET", "/users/1", nil)
 	response := executeRequest(req)
+	assertResponseCode(t, http.StatusOK, response.Code)
 	var u user.User
 	err := json.Unmarshal(response.Body.Bytes(), &u)
 	if err != nil {
-		t.Errorf("Unmarshal error")
+		t.Fatalf("Unmarshal error")
 	}
 	assertUsers(t, testUser, u)
+}
+
+func TestDeleteUser(t *testing.T) {
+	db.ClearUserTable(conn)
+	createTestUser()
+	req, _ := http.NewRequest("DELETE", "/users/1", nil)
+	response := executeRequest(req)
+	assertResponseCode(t, http.StatusNoContent, response.Code)
+	req, _ = http.NewRequest("GET", "/users/1", nil)
+	response = executeRequest(req)
+	assertResponseCode(t, http.StatusNotFound, response.Code)
+	// Test idempotency
+	req, _ = http.NewRequest("DELETE", "/users/1", nil)
+	response = executeRequest(req)
+	assertResponseCode(t, http.StatusNoContent, response.Code)
 }
 
 func assertUsers(t *testing.T, expected user.User, actual user.User) {

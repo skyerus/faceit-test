@@ -50,3 +50,25 @@ func (router *router) getUser(w http.ResponseWriter, r *http.Request) {
 
 	respondJSON(w, http.StatusOK, u)
 }
+
+func (router *router) deleteUser(w http.ResponseWriter, r *http.Request) {
+	idStr, success := mux.Vars(r)["id"]
+	if !success {
+		respondBadRequest(w)
+		return
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		respondBadRequest(w)
+		return
+	}
+	userRepo := userrepo.NewMysqlUserRepository(router.conn)
+	userService := userservice.NewUserService(userRepo)
+	customErr := userService.Delete(id)
+	if customErr != nil {
+		handleError(w, customErr)
+		return
+	}
+
+	respondJSON(w, http.StatusNoContent, nil)
+}

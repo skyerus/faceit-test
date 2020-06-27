@@ -61,3 +61,18 @@ func (ur mysqlUserRepository) Get(ID int) (user.User, customerror.Error) {
 
 	return u, nil
 }
+
+func (ur mysqlUserRepository) Delete(ID int) customerror.Error {
+	stmtIns, err := ur.Conn.Prepare("DELETE FROM `user` WHERE id = ?")
+	if err != nil {
+		return customerror.NewGenericHTTPError(err)
+	}
+	defer stmtIns.Close()
+
+	_, err = stmtIns.Exec(ID)
+	if err != nil {
+		return customerror.NewGenericHTTPError(err)
+	}
+
+	return nil
+}
