@@ -26,7 +26,7 @@ func (router *router) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondJSON(w, http.StatusOK, nil)
+	respondJSON(w, http.StatusCreated, u)
 }
 
 func (router *router) getUser(w http.ResponseWriter, r *http.Request) {

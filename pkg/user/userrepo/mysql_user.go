@@ -52,7 +52,7 @@ func (ur mysqlUserRepository) Get(ID int) (user.User, customerror.Error) {
 	defer results.Close()
 	res := results.Next()
 	if !res {
-		return u, customerror.NewBadRequestError("No user exists with id " + strconv.Itoa(ID))
+		return u, customerror.NewNotFoundError("No user exists with id " + strconv.Itoa(ID))
 	}
 	err = results.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Nickname, &u.Email, &u.Country)
 	if err != nil {
