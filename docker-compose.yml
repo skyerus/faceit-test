@@ -1,0 +1,43 @@
+version: '3.5'
+
+networks:
+    faceit-test:
+        name: faceit-test_network
+
+volumes:
+    mysql.faceit-test.local:
+
+services:
+    faceit-test.local:
+        container_name: faceit-test.local
+        hostname: faceit-test.local
+        image: skyerus/faceit-test_dev
+        command: bash -c "tail -f /dev/null"
+        networks:
+            - faceit-test
+        security_opt:
+            - seccomp:unconfined
+        cap_add:
+            - SYS_PTRACE
+        volumes:
+            - ./:/faceit-test
+        ports:
+            - '8080:80'
+            - '40000:40000'
+
+    mysql.faceit-test.local:
+        container_name: mysql.faceit-test.local
+        hostname: mysql.faceit-test.local
+        image: skyerus/mysql:faceit-test_dev
+        command: --default-authentication-plugin=mysql_native_password
+        volumes:
+            - "mysql.faceit-test.local:/var/lib/mysql"
+        networks:
+            - faceit-test
+        ports:
+            - '3306:3306'
+        environment:
+            - MYSQL_ROOT_PASSWORD=faceit
+            - MYSQL_USER=faceit
+            - MYSQL_PASSWORD=faceit
+            - MYSQL_DATABASE=faceit

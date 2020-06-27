@@ -1,0 +1,2 @@
+faceit-test
+# pkg/env/main.go - would normally ignore env file to keep secrets safe
