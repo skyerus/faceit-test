@@ -18,27 +18,27 @@ type HTTPError struct {
 	error   error
 }
 
-// NewHTTPError - constructor
+// NewHTTPError ...
 func NewHTTPError(code int, message string, err error) Error {
 	return &HTTPError{code, message, err}
 }
 
-// NewGenericHTTPError - constructor
+// NewGenericHTTPError ...
 func NewGenericHTTPError(err error) Error {
 	return &HTTPError{http.StatusInternalServerError, "Oops, something went wrong. Please try again later.", err}
 }
 
-// NewUnauthorizedError - constructor
+// NewUnauthorizedError ...
 func NewUnauthorizedError(err error) Error {
 	return &HTTPError{http.StatusUnauthorized, "Unauthorized request", err}
 }
 
-// NewForbiddenError - constructor
+// NewForbiddenError ...
 func NewForbiddenError(err error, message string) Error {
 	return &HTTPError{http.StatusForbidden, message, err}
 }
 
-// NewGenericNotFoundError - constructor
+// NewGenericNotFoundError ...
 func NewGenericNotFoundError() Error {
 	return &HTTPError{http.StatusNotFound, "Resource not found", nil}
 }
@@ -56,6 +56,11 @@ func NewGenericBadRequestError() Error {
 // NewBadRequestError ...
 func NewBadRequestError(msg string) Error {
 	return &HTTPError{http.StatusBadRequest, msg, nil}
+}
+
+// NewUnprocessableEntity ...
+func NewUnprocessableEntity(msg string) Error {
+	return &HTTPError{http.StatusUnprocessableEntity, msg, nil}
 }
 
 // OriginalError ...

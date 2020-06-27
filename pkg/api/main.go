@@ -32,7 +32,9 @@ func (a *App) Initialize(conn *sql.DB) {
 }
 
 func (a *App) setRouters(router *router) {
-	a.Router.HandleFunc("/", healthCheck).Methods("GET", "OPTIONS")
+	a.Router.HandleFunc("/", healthCheck).Methods("GET")
+	a.Router.HandleFunc("/users", router.createUser).Methods("POST")
+	a.Router.HandleFunc("/users/{id}", router.getUser).Methods("GET")
 }
 
 // Run - Run the app
