@@ -25,3 +25,7 @@ func (us userService) Get(ID int) (user.User, customerror.Error) {
 func (us userService) Delete(ID int) customerror.Error {
 	return us.userRepo.Delete(ID)
 }
+
+func (us userService) GetAll(f user.Filter) ([]user.User, customerror.Error) {
+	return us.userRepo.GetAll(f)
+}

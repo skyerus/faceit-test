@@ -9,4 +9,5 @@ type Service interface {
 	Create(u *User) customerror.Error
 	Get(ID int) (User, customerror.Error)
 	Delete(ID int) customerror.Error
+	GetAll(f Filter) ([]User, customerror.Error)
 }

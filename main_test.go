@@ -64,7 +64,7 @@ func TestGetNonExistentUser(t *testing.T) {
 
 func TestCreateUser(t *testing.T) {
 	db.ClearUserTable(conn)
-	response := createTestUser()
+	response := createUser(testUser)
 	assertResponseCode(t, http.StatusCreated, response.Code)
 
 	var u user.User
@@ -77,7 +77,7 @@ func TestCreateUser(t *testing.T) {
 
 func TestGetUser(t *testing.T) {
 	db.ClearUserTable(conn)
-	createTestUser()
+	createUser(testUser)
 	req, _ := http.NewRequest("GET", "/users/1", nil)
 	response := executeRequest(req)
 	assertResponseCode(t, http.StatusOK, response.Code)
@@ -91,7 +91,7 @@ func TestGetUser(t *testing.T) {
 
 func TestDeleteUser(t *testing.T) {
 	db.ClearUserTable(conn)
-	createTestUser()
+	createUser(testUser)
 	req, _ := http.NewRequest("DELETE", "/users/1", nil)
 	response := executeRequest(req)
 	assertResponseCode(t, http.StatusNoContent, response.Code)
@@ -102,6 +102,64 @@ func TestDeleteUser(t *testing.T) {
 	req, _ = http.NewRequest("DELETE", "/users/1", nil)
 	response = executeRequest(req)
 	assertResponseCode(t, http.StatusNoContent, response.Code)
+}
+
+func TestGetUsers(t *testing.T) {
+	db.ClearUserTable(conn)
+	createUser(testUser)
+	otherUser := testUser
+	otherUser.Nickname = "anna"
+	otherUser.Email = "anna@gmail.com"
+	otherUser.Country = "UK"
+	createUser(otherUser)
+	otherUser.Nickname = "josh"
+	otherUser.Email = "josh@gmail.com"
+	otherUser.Country = "France"
+	createUser(otherUser)
+
+	var filter user.Filter
+	filter = make(map[string]string)
+	users := getUsers(t, filter)
+	if len(users) != 3 {
+		t.Errorf("Expected length of result to be '%v'. Got '%v'", 3, len(users))
+	}
+
+	filter = make(map[string]string)
+	filter["country"] = "UK"
+	users = getUsers(t, filter)
+	if len(users) != 2 {
+		t.Errorf("Expected length of result to be '%v'. Got '%v'", 2, len(users))
+	}
+
+	filter = make(map[string]string)
+	filter["nickname"] = "j"
+	users = getUsers(t, filter)
+	if len(users) != 2 {
+		t.Errorf("Expected length of result to be '%v'. Got '%v'", 2, len(users))
+	}
+	filter["country"] = "UK"
+	users = getUsers(t, filter)
+	if len(users) != 1 {
+		t.Errorf("Expected length of result to be '%v'. Got '%v'", 1, len(users))
+	}
+}
+
+func getUsers(t *testing.T, filter user.Filter) []user.User {
+	req, _ := http.NewRequest("GET", "/users", nil)
+	q := req.URL.Query()
+	for k, v := range filter {
+		q.Set(k, v)
+	}
+	req.URL.RawQuery = q.Encode()
+	response := executeRequest(req)
+	assertResponseCode(t, http.StatusOK, response.Code)
+	var users []user.User
+	err := json.Unmarshal(response.Body.Bytes(), &users)
+	if err != nil {
+		t.Fatalf("Unmarshal error")
+	}
+
+	return users
 }
 
 func assertUsers(t *testing.T, expected user.User, actual user.User) {
@@ -125,8 +183,8 @@ func assertUsers(t *testing.T, expected user.User, actual user.User) {
 	}
 }
 
-func createTestUser() *httptest.ResponseRecorder {
-	byteData, _ := json.Marshal(testUser)
+func createUser(u user.User) *httptest.ResponseRecorder {
+	byteData, _ := json.Marshal(u)
 	req, _ := http.NewRequest("POST", "/users", bytes.NewBuffer(byteData))
 	req.Header.Set("Content-Type", "application/json")
 	return executeRequest(req)

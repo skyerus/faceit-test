@@ -3,6 +3,7 @@ package userrepo
 import (
 	"database/sql"
 	"strconv"
+	"strings"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/skyerus/faceit-test/pkg/customerror"
@@ -75,4 +76,46 @@ func (ur mysqlUserRepository) Delete(ID int) customerror.Error {
 	}
 
 	return nil
+}
+
+func (ur mysqlUserRepository) GetAll(f user.Filter) ([]user.User, customerror.Error) {
+	users := make([]user.User, 0)
+	var qb strings.Builder
+	qb.WriteString("SELECT * FROM user")
+	appendFilterToQuery(&qb, f)
+
+	results, err := ur.Conn.Query(qb.String())
+	if err != nil {
+		return users, customerror.NewGenericHTTPError(err)
+	}
+	defer results.Close()
+	for results.Next() {
+		var u user.User
+		err = results.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Nickname, &u.Email, &u.Country)
+		if err != nil {
+			return users, customerror.NewGenericHTTPError(err)
+		}
+		users = append(users, u)
+	}
+
+	return users, nil
+}
+
+func appendFilterToQuery(qb *strings.Builder, f user.Filter) {
+	var filterBeenApplied bool
+	for k, v := range f {
+		if v == "" {
+			continue
+		}
+		if !filterBeenApplied {
+			qb.WriteString(" WHERE ")
+			filterBeenApplied = true
+		} else {
+			qb.WriteString(" AND ")
+		}
+		qb.WriteString(k)
+		qb.WriteString(" LIKE '%")
+		qb.WriteString(v)
+		qb.WriteString("%'")
+	}
 }

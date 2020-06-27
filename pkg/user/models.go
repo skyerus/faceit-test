@@ -1,11 +1,14 @@
 package user
 
-// User ... 
+// User ...
 type User struct {
-	ID       int    `json:"id"`
+	ID        int    `json:"id"`
 	FirstName string `json:"first_name"`
-	LastName string `json:"last_name"`
-	Nickname string `json:"nickname"`
-	Email    string `json:"email"`
-	Country string `json:"country"`
+	LastName  string `json:"last_name"`
+	Nickname  string `json:"nickname"`
+	Email     string `json:"email"`
+	Country   string `json:"country"`
 }
+
+// Filter - search filter
+type Filter map[string]string

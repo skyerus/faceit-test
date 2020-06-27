@@ -72,3 +72,21 @@ func (router *router) deleteUser(w http.ResponseWriter, r *http.Request) {
 
 	respondJSON(w, http.StatusNoContent, nil)
 }
+
+func (router *router) getUsers(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	var filter user.Filter
+	filter = make(map[string]string)
+	filter["nickname"] = query.Get("nickname")
+	filter["country"] = query.Get("country")
+
+	userRepo := userrepo.NewMysqlUserRepository(router.conn)
+	userService := userservice.NewUserService(userRepo)
+	users, customErr := userService.GetAll(filter)
+	if customErr != nil {
+		handleError(w, customErr)
+		return
+	}
+
+	respondJSON(w, http.StatusOK, users)
+}

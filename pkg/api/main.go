@@ -36,6 +36,7 @@ func (a *App) setRouters(router *router) {
 	a.Router.HandleFunc("/users", router.createUser).Methods("POST")
 	a.Router.HandleFunc("/users/{id}", router.getUser).Methods("GET")
 	a.Router.HandleFunc("/users/{id}", router.deleteUser).Methods("DELETE")
+	a.Router.HandleFunc("/users", router.getUsers).Methods("GET")
 }
 
 // Run - Run the app
