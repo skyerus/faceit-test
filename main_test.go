@@ -55,17 +55,17 @@ func TestGetNonExistentUser(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/users/1", nil)
 	response := executeRequest(req)
 
-	checkResponseCode(t, http.StatusNotFound, response.Code)
+	assertResponseCode(t, http.StatusNotFound, response.Code)
 
 	var m map[string]string
 	json.Unmarshal(response.Body.Bytes(), &m)
-	checkErrorMessage(t, "No user exists with id 1", m["message"])
+	assertErrorMessage(t, "No user exists with id 1", m["message"])
 }
 
 func TestCreateUser(t *testing.T) {
 	db.ClearUserTable(conn)
 	response := createTestUser()
-	checkResponseCode(t, http.StatusCreated, response.Code)
+	assertResponseCode(t, http.StatusCreated, response.Code)
 
 	var u user.User
 	err := json.Unmarshal(response.Body.Bytes(), &u)
@@ -123,13 +123,13 @@ func executeRequest(req *http.Request) *httptest.ResponseRecorder {
 	return rr
 }
 
-func checkResponseCode(t *testing.T, expected int, actual int) {
+func assertResponseCode(t *testing.T, expected int, actual int) {
 	if expected != actual {
 		t.Errorf("Expected response code %d. Got %d\n", expected, actual)
 	}
 }
 
-func checkErrorMessage(t *testing.T, expected string, actual string) {
+func assertErrorMessage(t *testing.T, expected string, actual string) {
 	if expected != actual {
 		t.Errorf("Expected the 'message' key of the response to be set to '%s'. Got '%s'", expected, actual)
 	}
