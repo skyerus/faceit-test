@@ -24,6 +24,8 @@ services:
         ports:
             - '8080:80'
             - '40000:40000'
+        environment:
+            - INIT_TABLES=true
 
     mysql.faceit-test.local:
         container_name: mysql.faceit-test.local

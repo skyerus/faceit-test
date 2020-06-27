@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql" // mysql driver
@@ -18,22 +17,21 @@ type App struct {
 }
 
 type router struct {
-	db *sql.DB
+	conn *sql.DB
 }
 
-func newRouter(db *sql.DB) *router {
-	return &router{db}
+func newRouter(conn *sql.DB) *router {
+	return &router{conn}
 }
 
 // Initialize - Initialize app
-func (a *App) Initialize(db *sql.DB) {
-	router := newRouter(db)
+func (a *App) Initialize(conn *sql.DB) {
+	router := newRouter(conn)
 	a.Router = mux.NewRouter()
 	a.setRouters(router)
 }
 
 func (a *App) setRouters(router *router) {
-	// Base routes
 	a.Router.HandleFunc("/", healthCheck).Methods("GET", "OPTIONS")
 }
 
@@ -45,15 +43,5 @@ func (a *App) Run(host string) {
 		WriteTimeout: 10 * time.Second,
 		ReadTimeout:  18 * time.Second,
 	}
-	log.Println(srv.ListenAndServe())
-}
-
-// OpenDb ... OpenDb connection
-func OpenDb() (*sql.DB, error) {
-	db, err := sql.Open("mysql", os.Getenv("DB_URL")+"?parseTime=true")
-	if err != nil {
-		log.Fatal(err)
-		return db, err
-	}
-	return db, nil
+	log.Fatal(srv.ListenAndServe())
 }

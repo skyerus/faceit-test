@@ -1,31 +1,30 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"os"
 
 	"github.com/skyerus/faceit-test/pkg/api"
+	"github.com/skyerus/faceit-test/pkg/db"
 	"github.com/skyerus/faceit-test/pkg/env"
 )
 
 func main() {
 	env.SetEnv()
 	main := &api.App{}
-	db, err := openDb()
+	conn, err := db.OpenDb()
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	defer db.Close()
-	main.Initialize(db)
-	main.Run(":80")
-}
-
-func openDb() (*sql.DB, error) {
-	db, err := sql.Open("mysql", os.Getenv("DB_URL")+"?parseTime=true")
-	if err != nil {
-		return db, err
+	defer conn.Close()
+	if os.Getenv("INIT_TABLES") == "true" {
+		err := db.InitiateTables(conn)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
 	}
-	return db, nil
+	main.Initialize(conn)
+	main.Run(":80")
 }
