@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/skyerus/faceit-test/pkg/api"
+	"github.com/skyerus/faceit-test/pkg/cache"
 	"github.com/skyerus/faceit-test/pkg/db"
 	"github.com/skyerus/faceit-test/pkg/env"
 )
@@ -25,6 +26,7 @@ func main() {
 			return
 		}
 	}
-	main.Initialize(conn)
+	c := cache.InstantiateCache()
+	main.Initialize(conn, c)
 	main.Run(":80")
 }

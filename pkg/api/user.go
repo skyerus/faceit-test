@@ -33,13 +33,19 @@ func (router *router) getUser(w http.ResponseWriter, r *http.Request) {
 		handleError(w, customErr)
 		return
 	}
+	u, found := router.c.GetUsersCache().GetUser(ID)
+	if found {
+		respondJSON(w, http.StatusOK, u)
+		return
+	}
 	userRepo := userrepo.NewMysqlUserRepository(router.conn)
 	userService := userservice.NewUserService(userRepo)
-	u, customErr := userService.Get(ID)
+	u, customErr = userService.Get(ID)
 	if customErr != nil {
 		handleError(w, customErr)
 		return
 	}
+	go router.c.GetUsersCache().AddUser(u)
 
 	respondJSON(w, http.StatusOK, u)
 }
@@ -57,6 +63,7 @@ func (router *router) deleteUser(w http.ResponseWriter, r *http.Request) {
 		handleError(w, customErr)
 		return
 	}
+	router.c.GetUsersCache().DeleteUser(ID)
 
 	respondJSON(w, http.StatusNoContent, nil)
 }
@@ -100,6 +107,7 @@ func (router *router) updateUser(w http.ResponseWriter, r *http.Request) {
 		handleError(w, customErr)
 		return
 	}
+	router.c.GetUsersCache().AddUser(u)
 
 	respondJSON(w, http.StatusOK, u)
 }

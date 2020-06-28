@@ -7,6 +7,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql" // mysql driver
+	"github.com/skyerus/faceit-test/pkg/cache"
 
 	"github.com/gorilla/mux"
 )
@@ -18,15 +19,16 @@ type App struct {
 
 type router struct {
 	conn *sql.DB
+	c    *cache.Cache
 }
 
-func newRouter(conn *sql.DB) *router {
-	return &router{conn}
+func newRouter(conn *sql.DB, c *cache.Cache) *router {
+	return &router{conn, c}
 }
 
 // Initialize - Initialize app
-func (a *App) Initialize(conn *sql.DB) {
-	router := newRouter(conn)
+func (a *App) Initialize(conn *sql.DB, c *cache.Cache) {
+	router := newRouter(conn, c)
 	a.Router = mux.NewRouter()
 	a.setRouters(router)
 }

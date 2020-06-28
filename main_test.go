@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/skyerus/faceit-test/pkg/api"
+	"github.com/skyerus/faceit-test/pkg/cache"
 	"github.com/skyerus/faceit-test/pkg/db"
 	"github.com/skyerus/faceit-test/pkg/env"
 	"github.com/skyerus/faceit-test/pkg/user"
@@ -18,6 +19,7 @@ import (
 
 var a api.App
 var conn *sql.DB
+var c *cache.Cache
 var testUser user.User = user.User{
 	ID:        1,
 	FirstName: "John",
@@ -41,7 +43,8 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	a.Initialize(conn)
+	c = cache.InstantiateCache()
+	a.Initialize(conn, c)
 	code := m.Run()
 	err = db.ClearUserTable(conn)
 	if err != nil {
@@ -52,7 +55,7 @@ func TestMain(m *testing.M) {
 
 func TestGetNonExistentUser(t *testing.T) {
 	db.ClearUserTable(conn)
-
+	c.ClearCache()
 	req, _ := http.NewRequest("GET", "/users/1", nil)
 	response := executeRequest(req)
 
@@ -65,6 +68,7 @@ func TestGetNonExistentUser(t *testing.T) {
 
 func TestCreateUser(t *testing.T) {
 	db.ClearUserTable(conn)
+	c.ClearCache()
 	response := createUser(testUser)
 	assertResponseCode(t, http.StatusCreated, response.Code)
 
@@ -78,6 +82,7 @@ func TestCreateUser(t *testing.T) {
 
 func TestGetUser(t *testing.T) {
 	db.ClearUserTable(conn)
+	c.ClearCache()
 	createUser(testUser)
 	req, _ := http.NewRequest("GET", "/users/1", nil)
 	response := executeRequest(req)
@@ -92,6 +97,7 @@ func TestGetUser(t *testing.T) {
 
 func TestDeleteUser(t *testing.T) {
 	db.ClearUserTable(conn)
+	c.ClearCache()
 	createUser(testUser)
 	req, _ := http.NewRequest("DELETE", "/users/1", nil)
 	response := executeRequest(req)
@@ -107,6 +113,7 @@ func TestDeleteUser(t *testing.T) {
 
 func TestGetUsers(t *testing.T) {
 	db.ClearUserTable(conn)
+	c.ClearCache()
 	createUser(testUser)
 	otherUser := testUser
 	otherUser.Nickname = "anna"
@@ -147,6 +154,7 @@ func TestGetUsers(t *testing.T) {
 
 func TestUpdateUser(t *testing.T) {
 	db.ClearUserTable(conn)
+	c.ClearCache()
 	createUser(testUser)
 	updatedUser := testUser
 	updatedUser.Nickname = "johnnyapple"
