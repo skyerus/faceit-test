@@ -55,6 +55,7 @@ func (uc *UsersCache) GetUser(ID int) (u user.User, found bool) {
 	if !userFound(u) {
 		return u, false
 	}
+	go uc.shiftIDToEnd(ID, true)
 
 	return u, true
 }
@@ -65,7 +66,7 @@ func (uc *UsersCache) AddUser(u user.User) {
 	defer uc.mux.Unlock()
 	cachedUser := uc.users[u.ID]
 	if userFound(cachedUser) {
-		uc.shiftIDToEnd(u.ID)
+		uc.shiftIDToEnd(u.ID, false)
 		uc.users[u.ID] = u
 	} else {
 		if len(uc.users) == maxNumOfCachedUsers {
@@ -109,7 +110,11 @@ func min(first int, second int) int {
 	return first
 }
 
-func (uc *UsersCache) shiftIDToEnd(ID int) {
+func (uc *UsersCache) shiftIDToEnd(ID int, lock bool) {
+	if lock {
+		uc.mux.Lock()
+		defer uc.mux.Unlock()
+	}
 	var i int
 	for i = 0; i < len(uc.keys); i++ {
 		if uc.keys[i] == ID {
@@ -117,7 +122,7 @@ func (uc *UsersCache) shiftIDToEnd(ID int) {
 		}
 	}
 	uc.keys = append(uc.keys[:i], uc.keys[i+1:]...)
-	uc.keys = append(uc.keys, ID)
+	uc.keys[len(uc.users)-1] = ID
 }
 
 func userFound(u user.User) bool {
