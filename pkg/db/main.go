@@ -21,7 +21,7 @@ func InitiateTables(conn *sql.DB) error {
 
 // CreateUserTable - create user table if doesn't already exist
 func CreateUserTable(conn *sql.DB) error {
-	_, err := conn.Exec("CREATE TABLE IF NOT EXISTS `faceit`.`user` (`id` INT NOT NULL AUTO_INCREMENT, `first_name` VARCHAR(45) NULL,`last_name` VARCHAR(45) NULL, `nickname` VARCHAR(45) NULL, `email` VARCHAR(45) NULL, `country` VARCHAR(45) NULL, PRIMARY KEY (`id`), UNIQUE INDEX `nickname_UNIQUE` (`nickname` ASC), UNIQUE INDEX `email_UNIQUE` (`email` ASC), INDEX `index4` (`country` ASC));")
+	_, err := conn.Exec("CREATE TABLE IF NOT EXISTS `faceit`.`user` (`id` INT NOT NULL AUTO_INCREMENT, `first_name` VARCHAR(45) NULL,`last_name` VARCHAR(45) NULL, `nickname` VARCHAR(45) NULL, `password` VARCHAR(100) NULL, `email` VARCHAR(45) NULL, `country` VARCHAR(45) NULL, PRIMARY KEY (`id`), UNIQUE INDEX `nickname_UNIQUE` (`nickname` ASC), UNIQUE INDEX `email_UNIQUE` (`email` ASC), INDEX `index4` (`country` ASC));")
 
 	return err
 }

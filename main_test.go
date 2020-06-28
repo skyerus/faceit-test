@@ -25,6 +25,7 @@ var testUser user.User = user.User{
 	FirstName: "John",
 	LastName:  "Appleseed",
 	Email:     "john.appleseed@gmail.com",
+	Password:  "thisisatest",
 	Nickname:  "jappleseed",
 	Country:   "UK",
 }

@@ -20,13 +20,13 @@ func NewMysqlUserRepository(Conn *sql.DB) user.Repository {
 }
 
 func (ur mysqlUserRepository) Create(u *user.User) customerror.Error {
-	stmtIns, err := ur.Conn.Prepare("INSERT INTO user (first_name, last_name, nickname, email, country) VALUES(?, ?, ?, ?, ?)")
+	stmtIns, err := ur.Conn.Prepare("INSERT INTO user (first_name, last_name, nickname, password, email, country) VALUES(?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return customerror.NewGenericHTTPError(err)
 	}
 	defer stmtIns.Close()
 
-	result, err := stmtIns.Exec(u.FirstName, u.LastName, u.Nickname, u.Email, u.Country)
+	result, err := stmtIns.Exec(u.FirstName, u.LastName, u.Nickname, u.Password, u.Email, u.Country)
 	if mysqlError, ok := err.(*mysql.MySQLError); ok {
 		if mysqlError.Number == 1062 {
 			return customerror.NewUnprocessableEntity("User already exists")
@@ -46,7 +46,7 @@ func (ur mysqlUserRepository) Create(u *user.User) customerror.Error {
 
 func (ur mysqlUserRepository) Get(ID int) (user.User, customerror.Error) {
 	var u user.User
-	results, err := ur.Conn.Query("SELECT user.id, user.first_name, user.last_name, user.nickname, user.email, user.country FROM user WHERE id = ?", ID)
+	results, err := ur.Conn.Query("SELECT user.id, user.first_name, user.last_name, user.nickname, user.password, user.email, user.country FROM user WHERE id = ?", ID)
 	if err != nil {
 		return u, customerror.NewGenericHTTPError(err)
 	}
@@ -55,7 +55,7 @@ func (ur mysqlUserRepository) Get(ID int) (user.User, customerror.Error) {
 	if !res {
 		return u, customerror.NewNotFoundError("No user exists with id " + strconv.Itoa(ID))
 	}
-	err = results.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Nickname, &u.Email, &u.Country)
+	err = results.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Nickname, &u.Password, &u.Email, &u.Country)
 	if err != nil {
 		return u, customerror.NewGenericHTTPError(err)
 	}
@@ -91,7 +91,7 @@ func (ur mysqlUserRepository) GetAll(f user.Filter) ([]user.User, customerror.Er
 	defer results.Close()
 	for results.Next() {
 		var u user.User
-		err = results.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Nickname, &u.Email, &u.Country)
+		err = results.Scan(&u.ID, &u.FirstName, &u.LastName, &u.Nickname, &u.Password, &u.Email, &u.Country)
 		if err != nil {
 			return users, customerror.NewGenericHTTPError(err)
 		}
@@ -102,13 +102,13 @@ func (ur mysqlUserRepository) GetAll(f user.Filter) ([]user.User, customerror.Er
 }
 
 func (ur mysqlUserRepository) Update(u user.User) customerror.Error {
-	stmtIns, err := ur.Conn.Prepare("UPDATE user SET first_name=?, last_name=?, nickname=?, email=?, country=? WHERE id=?")
+	stmtIns, err := ur.Conn.Prepare("UPDATE user SET first_name=?, last_name=?, nickname=?, password=?, email=?, country=? WHERE id=?")
 	if err != nil {
 		return customerror.NewGenericHTTPError(err)
 	}
 	defer stmtIns.Close()
 
-	result, err := stmtIns.Exec(u.FirstName, u.LastName, u.Nickname, u.Email, u.Country, u.ID)
+	result, err := stmtIns.Exec(u.FirstName, u.LastName, u.Nickname, u.Password, u.Email, u.Country, u.ID)
 	if err != nil {
 		return customerror.NewGenericHTTPError(err)
 	}

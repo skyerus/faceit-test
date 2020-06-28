@@ -1,6 +1,7 @@
 package userservice
 
 import (
+	"github.com/skyerus/faceit-test/pkg/crypto"
 	"github.com/skyerus/faceit-test/pkg/customerror"
 	"github.com/skyerus/faceit-test/pkg/event"
 	"github.com/skyerus/faceit-test/pkg/user"
@@ -16,6 +17,11 @@ func NewUserService(userRepo user.Repository) user.Service {
 }
 
 func (us userService) Create(u *user.User) customerror.Error {
+	saltedHash, err := crypto.GenerateSaltedHash(u.Password)
+	if err != nil {
+		return customerror.NewGenericHTTPError(err)
+	}
+	u.Password = saltedHash
 	customErr := us.userRepo.Create(u)
 	if customErr != nil {
 		return customErr
@@ -42,6 +48,11 @@ func (us userService) GetAll(f user.Filter) ([]user.User, customerror.Error) {
 }
 
 func (us userService) Update(u user.User) customerror.Error {
+	saltedHash, err := crypto.GenerateSaltedHash(u.Password)
+	if err != nil {
+		return customerror.NewGenericHTTPError(err)
+	}
+	u.Password = saltedHash
 	customErr := us.userRepo.Update(u)
 	if customErr != nil {
 		return customErr
