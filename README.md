@@ -34,8 +34,11 @@ To disable events firing you can change the environment variable `NO_EVENT_BROAD
 Is it worth containerising the microservice with its database attached? Is this not costly if the application has a lot of microservices?
 
 ## Troubleshooting
+```
+docker logs faceit-test.local
+```
 If you get an error similar to
 ```
 dial tcp 172.18.0.2:3306: connection: connection refused
 ```
-This is likely because the mysql container isn't healthy yet (despite our service being dependant on it). Please wait for the mysql container to become healthy (`docker ps`) and try again.
+This is likely because the mysql container isn't healthy yet (despite our service being dependant on it). Please wait for the mysql container to become healthy (`docker ps`) and `docker-compose up -d` again.
