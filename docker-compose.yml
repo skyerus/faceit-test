@@ -19,6 +19,8 @@ services:
             - seccomp:unconfined
         cap_add:
             - SYS_PTRACE
+        depends_on: 
+            - mysql.faceit-test.local
         volumes:
             - ./:/faceit-test
         ports:

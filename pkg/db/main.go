@@ -7,11 +7,7 @@ import (
 
 // OpenDb - create db connection
 func OpenDb() (*sql.DB, error) {
-	db, err := sql.Open("mysql", os.Getenv("DB_URL")+"?parseTime=true&clientFoundRows=true")
-	if err != nil {
-		return db, err
-	}
-	return db, nil
+	return sql.Open("mysql", os.Getenv("DB_URL")+"?parseTime=true&clientFoundRows=true")
 }
 
 // InitiateTables - create database tables if don't already exist

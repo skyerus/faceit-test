@@ -1,10 +1,26 @@
 # faceit-test
 
 ## Instructions
+To start the containers:
+```
+docker-compose up -d
+```
+Exec into the go container:
+```
+docker exec -it faceit-test.local /bin/bash
+```
+To launch the service:
+```
+run
+```
+To run the tests:
+```
+run-tests
+```
 
 ## Assumptions
-1. The application is public facing.
-2. Username and country are the only filterable fields (with wildcards either side). 
+1. The application is public facing
+2. Username and country are the only filterable fields (with wildcards either side)
 3. Event listeners are hardcoded and separated by event type e.g. post/put/delete
 4. The user microservice receives a lot of traffic, creating the need for caching
 
