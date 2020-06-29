@@ -23,7 +23,7 @@ To disable events firing you can change the environment variable NO_EVENT_BROADC
 ## Assumptions
 1. The application is public facing
 2. Username and country are the only filterable fields (with wildcards either side)
-3. Event listeners are hardcoded and separated by event type e.g. post/put/delete
+3. Event listeners are hardcoded and separated by event type e.g. POST/PUT/DELETE
 4. The user microservice receives a lot of traffic, creating the need for caching
 
 ## Room for improvement
