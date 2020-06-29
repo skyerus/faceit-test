@@ -14,6 +14,8 @@ docker exec -it faceit-test.local /bin/bash
 run-tests
 ```
 
+The exposed port is `8080`.
+
 Note: You'll see non-fatal errors in the logs when making POST/PUT/DELETE requests, this is because an event is being fired into nothing.
 To disable events firing you can change the environment variable `NO_EVENT_BROADCASTS=true` in docker-compose.yml
 
