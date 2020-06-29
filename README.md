@@ -17,6 +17,8 @@ To run the tests:
 ```
 run-tests
 ```
+Note: You'll see errors in the terminal when making POST/PUT/DELETE requests, this is because an event is being fired into nothing
+To disable events firing you can change the environment variable INIT_TABLES=false in docker-compose.yml
 
 ## Assumptions
 1. The application is public facing
