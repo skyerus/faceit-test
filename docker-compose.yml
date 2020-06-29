@@ -12,7 +12,12 @@ services:
         container_name: faceit-test.local
         hostname: faceit-test.local
         image: skyerus/faceit-test_dev
-        command: bash -c "tail -f /dev/null"
+        command: bash -c "cd /faceit-test;go build -gcflags \"all=-N -l\" -o /faceit github.com/skyerus/faceit-test; /faceit"
+        healthcheck:
+            test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:80/ || exit 1"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
         networks:
             - faceit-test
         security_opt:

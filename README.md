@@ -5,18 +5,12 @@ To start the containers:
 ```
 docker-compose up -d
 ```
-Exec into the go container:
-```
-docker exec -it faceit-test.local /bin/bash
-```
-To launch the service:
-```
-run
-```
 To run the tests:
 ```
+docker exec -it faceit-test.local /bin/bash
 run-tests
 ```
+
 Note: You'll see non-fatal errors in the terminal when making POST/PUT/DELETE requests, this is because an event is being fired into nothing.
 To disable events firing you can change the environment variable NO_EVENT_BROADCASTS=true in docker-compose.yml
 
@@ -34,3 +28,10 @@ To disable events firing you can change the environment variable NO_EVENT_BROADC
 
 ## Food for thought
 Is it worth containerising the microservice with its database attached? Is this not costly if the application has a lot of microservices?
+
+## Troubleshooting
+If you get an error similar to
+```
+dial tcp 172.18.0.2:3306: connection: connection refused
+```
+This is likely because the mysql container isn't ready yet (despite passing the healthcheck). Please wait a few seconds and try again.
