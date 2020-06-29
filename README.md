@@ -30,6 +30,7 @@ To disable events firing you can change the environment variable NO_EVENT_BROADC
 1. Pagination for GET /users
 2. Microservice for routing events
 3. Outsource caching to a separate microservice
+4. Unit testing for the caching mechanism
 
 ## Food for thought
 Is it worth containerising the microservice with its database attached? Is this not costly if the application has a lot of microservices?
