@@ -4,7 +4,10 @@
 To start the containers:
 ```
 docker-compose up -d
+docker ps
 ```
+Check that both containers are listed in docker ps. If our service isn't listed, please follow [troubleshooting](##troubleshooting)
+<br>
 To run the tests:
 ```
 docker exec -it faceit-test.local /bin/bash
