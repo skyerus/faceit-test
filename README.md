@@ -6,7 +6,7 @@ To start the containers:
 docker-compose up -d
 docker ps
 ```
-Check that both containers are listed in docker ps. If our service isn't listed, please follow [troubleshooting](#troubleshooting)
+Check that both containers are listed in `docker ps`. If our service isn't listed, please follow [troubleshooting](#troubleshooting)
 
 To run the tests:
 ```
@@ -15,7 +15,7 @@ run-tests
 ```
 
 Note: You'll see non-fatal errors in the terminal when making POST/PUT/DELETE requests, this is because an event is being fired into nothing.
-To disable events firing you can change the environment variable NO_EVENT_BROADCASTS=true in docker-compose.yml
+To disable events firing you can change the environment variable `NO_EVENT_BROADCASTS=true` in docker-compose.yml
 
 ## Assumptions
 1. The application is public facing
@@ -38,4 +38,4 @@ If you get an error similar to
 ```
 dial tcp 172.18.0.2:3306: connection: connection refused
 ```
-This is likely because the mysql container isn't healthy yet (despite our service being dependant on it). Please wait for the mysql container to become healthy (docker ps) and try again.
+This is likely because the mysql container isn't healthy yet (despite our service being dependant on it). Please wait for the mysql container to become healthy (`docker ps`) and try again.
