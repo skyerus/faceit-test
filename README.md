@@ -34,4 +34,4 @@ If you get an error similar to
 ```
 dial tcp 172.18.0.2:3306: connection: connection refused
 ```
-This is likely because the mysql container isn't ready yet (despite passing the healthcheck). Please wait a few seconds and try again.
+This is likely because the mysql container isn't ready yet (despite our service being dependant on it). Please wait a few seconds and try again.
