@@ -28,6 +28,7 @@ services:
             - '40000:40000'
         environment:
             - INIT_TABLES=true
+            - NO_EVENT_BROADCASTS=false
 
     mysql.faceit-test.local:
         container_name: mysql.faceit-test.local
